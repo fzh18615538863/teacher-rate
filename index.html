@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>体育学院班主任考核学生评分表</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Microsoft YaHei',sans-serif;background:#f0f2f5;min-height:100vh;display:flex;justify-content:center;padding:20px}
+  .container{width:100%;max-width:700px}
+  .header{background:linear-gradient(135deg,#1a73e8,#1557b0);color:#fff;padding:24px;border-radius:12px 12px 0 0;text-align:center}
+  .header h1{font-size:20px;margin-bottom:4px}.header p{font-size:13px;opacity:.85}
+  .main{background:#fff;padding:20px 24px;border-radius:0 0 12px 12px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+  .info-row{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:8px}
+  .info-item{display:flex;align-items:center;gap:8px}
+  .info-item label{font-size:14px;font-weight:600;color:#333;white-space:nowrap}
+  .info-item input,.info-item select{padding:8px 12px;border:2px solid #e0e0e0;border-radius:6px;font-size:14px;outline:none}
+  .info-item input:focus,.info-item select:focus{border-color:#1a73e8}
+  .info-item input{width:140px}.info-item select{width:100px}
+  .section-title{font-size:16px;font-weight:700;color:#1a73e8;margin:20px 0 8px;padding:8px 12px;background:#f0f5ff;border-left:4px solid #1a73e8;border-radius:0 6px 6px 0}
+  .item{padding:14px 0;border-bottom:1px solid #f0f0f0}
+  .item:last-of-type{border-bottom:none}
+  .item-label{font-size:14px;color:#333;margin-bottom:8px;font-weight:500}
+  .options{display:flex;gap:24px}
+  .option{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px;color:#555}
+  .option input[type=radio]{accent-color:#1a73e8;width:18px;height:18px;cursor:pointer}
+  .subjective-box{margin-top:20px}
+  .subjective-box label{display:block;font-size:14px;font-weight:600;color:#333;margin-bottom:8px}
+  .subjective-box textarea{width:100%;height:80px;padding:12px;border:2px solid #e0e0e0;border-radius:6px;font-size:14px;font-family:'Microsoft YaHei',sans-serif;resize:vertical;outline:none}
+  .subjective-box textarea:focus{border-color:#1a73e8}
+  .btn-submit{width:100%;padding:14px;border:none;border-radius:8px;font-size:16px;cursor:pointer;font-weight:600;color:#fff}
+  .btn-submit:hover{opacity:.9}
+  .btn-primary{background:#1a73e8}.btn-dark{background:#555}
+  .result-box{margin-top:20px;padding:20px;background:#f8fafc;border-radius:10px;display:none}
+  .result-box.show{display:block}
+  .score-big{text-align:center;margin-bottom:16px}
+  .score-big .num{font-size:56px;font-weight:700;color:#1a73e8}
+  .score-big .bar{font-size:13px;color:#999;margin-top:2px}
+  .result-summary{display:flex;gap:16px;flex-wrap:wrap}
+  .summary-card{flex:1;min-width:100px;padding:14px;background:#fff;border-radius:8px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  .summary-card .val{font-size:24px;font-weight:700;color:#1a73e8}
+  .summary-card .lbl{font-size:12px;color:#999;margin-top:2px}
+  .reset-link{display:block;text-align:center;margin-top:12px;color:#999;font-size:13px;cursor:pointer}
+  .reset-link:hover{color:#1a73e8}
+  .error{color:#e53935;font-size:13px;margin-top:4px;display:none}
+  .admin-panel{display:none;margin-top:20px;padding:20px;background:#1a1a2e;border-radius:10px;color:#eee}
+  .admin-panel table{width:100%;border-collapse:collapse;font-size:13px}
+  .admin-panel th{background:#333;padding:10px;text-align:left;border-bottom:1px solid #444}
+  .admin-panel td{padding:10px;border-bottom:1px solid #333}
+  .admin-btn{padding:6px 14px;border:none;border-radius:4px;cursor:pointer;font-size:12px;color:#fff}
+  .btn-blue{background:#1a73e8}.btn-red{background:#c62828}.btn-green{background:#2e7d32}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header"><h1>体育学院班主任考核学生评分表</h1><p>2025—2026学年 · 满分100分 · 请如实填写</p></div>
+<div class="main">
+<div class="info-row">
+<div class="info-item"><label>班主任：</label><input type="text" id="teacherName" placeholder="姓名"></div>
+<div class="info-item"><label>年级：</label><select id="grade"><option value="">选择</option><option>A 一年级</option><option>B 二年级</option><option>C 三年级</option><option>D 四年级</option></select></div>
+<div class="info-item"><label>学生干部：</label><select id="isLeader"><option value="">选择</option><option>A 是</option><option>B 否</option></select></div>
+<div class="info-item"><label>党员：</label><select id="isParty"><option value="">选择</option><option>A 是</option><option>B 否</option></select></div>
+</div>
+<div class="error" id="nameError">请填写班主任姓名</div>
+<div id="items"></div>
+<div class="subjective-box"><label>21. 你对班主任工作有什么意见和建议？</label><textarea id="subjective" placeholder="选填"></textarea></div>
+<div style="display:flex;gap:10px">
+<button class="btn-submit btn-primary" style="flex:1" onclick="submit()">提交评分</button>
+<button class="btn-submit btn-dark" style="flex:1" onclick="toggleAdmin()">后台数据</button>
+</div>
+<div class="admin-panel" id="adminPanel">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><span style="font-size:18px;font-weight:700">📊 评分统计</span><span style="font-size:13px;color:#aaa" id="recordCount">-</span></div>
+<div id="adminTable"></div>
+<div style="margin-top:16px;display:flex;gap:10px"><button class="admin-btn btn-green" onclick="exportCSV()">导出 CSV</button><button class="admin-btn btn-red" onclick="clearData()">清空数据</button></div>
+</div>
+<div class="result-box" id="resultBox">
+<div class="score-big"><div class="num" id="totalScore">0</div><div class="bar">总分（满分 100 分）</div></div>
+<div class="result-summary">
+<div class="summary-card"><div class="val" id="s1">0</div><div class="lbl">职业规范</div></div>
+<div class="summary-card"><div class="val" id="s2">0</div><div class="lbl">业务能力</div></div>
+<div class="summary-card"><div class="val" id="s3">0</div><div class="lbl">工作实绩</div></div>
+<div class="summary-card"><div class="val" id="s4">0</div><div class="lbl">工作效果</div></div>
+</div>
+<div id="subjectiveDisplay" style="margin-top:12px;padding-top:12px;border-top:1px solid #e0e0e0;display:none"><span style="font-size:13px;color:#999">意见建议：</span><span style="font-size:14px;color:#555" id="subjectiveText"></span></div>
+</div>
+<span class="reset-link" onclick="resetAll()">重新打分</span>
+</div></div>
+<script src="config.js"></script>
+<script>
+var REPO='fzh18615538863/teacher-rate',TOKEN='';
+var ratings=[];
+
+var sections=[{title:'一、职业规范方面',items:['班主任的责任心','班主任爱岗敬业精神','班主任为人师表','班主任关爱学生','班主任的工作能力']},{title:'二、业务能力方面',items:['班主任帮助学生解决问题的能力','班主任与学生的接触面','班主任组织参加班级会议','班主任与学生谈心谈话','班主任与学生的关系','班主任与学生家长的沟通']},{title:'三、工作实绩方面',items:['班主任教育学生加强专业学习','班主任指导学生开展科技创新、社会实践等活动','班主任进公寓情况','班主任加强班级学风建设','班主任开展职业生涯规划指导、就业指导','综合测评评奖评优等班级活动中的表现']},{title:'四、工作效果方面',items:['班主任对你的成长影响','你是否愿意再参加一次班会','你对班主任工作的总体评价']}];
+
+var optionSets={'default':[{label:'A',text:'好/强',v:5},{label:'B',text:'一般/较好',v:3},{label:'C',text:'差/弱',v:0}],'6':[{label:'A',text:'与大部分学生接触',v:5},{label:'B',text:'与部分学生接触',v:3},{label:'C',text:'只与学生干部接触',v:0}],'7':[{label:'A',text:'每周或每两周开一次',v:5},{label:'B',text:'偶尔开班会',v:3},{label:'C',text:'基本不开',v:0}],'8':[{label:'A',text:'与每个学生谈过心',v:5},{label:'B',text:'与部分学生谈心',v:3},{label:'C',text:'只与个别学生谈心',v:0}],'9':[{label:'A',text:'融洽',v:5},{label:'B',text:'一般',v:3},{label:'C',text:'不融洽',v:0}],'10':[{label:'A',text:'经常沟通',v:5},{label:'B',text:'沟通一般',v:3},{label:'C',text:'没有沟通',v:0}],'13':[{label:'A',text:'经常',v:5},{label:'B',text:'偶尔',v:3},{label:'C',text:'没去过',v:0}],'16':[{label:'A',text:'经常参加',v:5},{label:'B',text:'偶尔',v:3},{label:'C',text:'基本没参加过',v:0}],'17':[{label:'A',text:'积极影响',v:5},{label:'B',text:'没什么影响',v:3},{label:'C',text:'负面影响',v:0}],'18':[{label:'A',text:'愿意',v:10},{label:'B',text:'无所谓',v:8},{label:'C',text:'不愿意',v:5}],'19':[{label:'A',text:'满意',v:0},{label:'B',text:'基本满意',v:0},{label:'C',text:'不满意',v:0}]};
+
+var allItems=[],secBounds=[],idx=0;sections.forEach(function(sec){var s=allItems.length;sec.items.forEach(function(t){allItems.push({text:t});idx++;});secBounds.push({title:sec.title,start:s,end:allItems.length});});ratings=new Array(allItems.length).fill(null);
+
+var itemsDiv=document.getElementById('items');
+secBounds.forEach(function(sec){var st=document.createElement('div');st.className='section-title';st.textContent=sec.title;itemsDiv.appendChild(st);for(var i=sec.start;i<sec.end;i++){var opts=optionSets[''+i]||optionSets['default'];var div=document.createElement('div');div.className='item';var h='';opts.forEach(function(o){h+='<label class="option"><input type="radio" name="q'+i+'" value="'+o.v+'" onchange="rate('+i+','+o.v+')"><span>'+o.label+'. '+o.text+'</span></label>';});div.innerHTML='<div class="item-label">'+(i+1)+'. '+allItems[i].text+'</div><div class="options">'+h+'</div>';itemsDiv.appendChild(div);}});
+
+function rate(i,v){ratings[i]=v;}
+
+function submit(){
+  var name=document.getElementById('teacherName').value.trim();
+  if(!name){document.getElementById('nameError').style.display='block';return;}
+  document.getElementById('nameError').style.display='none';
+  var missed=[];ratings.forEach(function(r,i){if(r===null)missed.push(i+1);});
+  if(missed.length>0){alert('以下还没选：第'+missed.join('、')+'题');return;}
+  var total=ratings.reduce(function(a,b){return a+b;},0);
+  var rec={teacher:name,gl:document.getElementById('grade').value,ld:document.getElementById('isLeader').value,dy:document.getElementById('isParty').value,scores:ratings.slice(),total:total,sub:document.getElementById('subjective').value.trim(),time:new Date().toLocaleString('zh-CN')};
+  document.getElementById('totalScore').textContent=total;
+  var ss=secBounds.map(function(sec){var s=0;for(var i=sec.start;i<sec.end;i++)s+=ratings[i];return s;});
+  document.getElementById('s1').textContent=ss[0];document.getElementById('s2').textContent=ss[1];document.getElementById('s3').textContent=ss[2];document.getElementById('s4').textContent=ss[3];
+  if(rec.sub){document.getElementById('subjectiveDisplay').style.display='block';document.getElementById('subjectiveText').textContent=rec.sub;}
+  document.getElementById('resultBox').classList.add('show');document.getElementById('resultBox').scrollIntoView({behavior:'smooth'});
+
+  // Save via GitHub API
+  fetch('https://api.github.com/repos/'+REPO+'/contents/data.json',{headers:{'Authorization':'token '+TOKEN}})
+  .then(function(r){return r.json();}).then(function(info){
+    return fetch('./data.json').then(function(r){return r.json();}).then(function(all){
+      all.push(rec);
+      return fetch('https://api.github.com/repos/'+REPO+'/contents/data.json',{method:'PUT',headers:{'Authorization':'token '+TOKEN,'Content-Type':'application/json'},body:JSON.stringify({message:rec.teacher+' '+rec.total+'分',content:btoa(unescape(encodeURIComponent(JSON.stringify(all)))),sha:info.sha})});
+    });
+  }).catch(function(e){console.log('Save error:',e);});
+}
+
+function toggleAdmin(){var p=document.getElementById('adminPanel');if(p.style.display==='none'){p.style.display='block';loadAdmin();p.scrollIntoView({behavior:'smooth'});}else p.style.display='none';}
+
+function loadAdmin(){
+  document.getElementById('adminTable').innerHTML='<div style="color:#888;padding:20px;text-align:center">加载中...</div>';
+  fetch('./data.json').then(function(r){return r.json();}).then(function(data){
+    document.getElementById('recordCount').textContent='共 '+data.length+' 条评分';
+    if(!data.length){document.getElementById('adminTable').innerHTML='<div style="color:#888;padding:20px;text-align:center">暂无数据</div>';return;}
+    var map={};data.forEach(function(r){if(!map[r.teacher])map[r.teacher]=[];map[r.teacher].push(r.total);});
+    var rows=Object.entries(map).map(function(e){var sc=e[1];return {name:e[0],count:sc.length,avg:parseFloat((sc.reduce(function(a,b){return a+b;})/sc.length).toFixed(1)),max:Math.max.apply(null,sc)};}).sort(function(a,b){return b.avg-a.avg;});
+    var h='<table><thead><tr style="background:#333"><th style="padding:10px;text-align:left;border-bottom:1px solid #444">班主任</th><th style="padding:10px;border-bottom:1px solid #444">人数</th><th style="padding:10px;border-bottom:1px solid #444">平均分</th><th style="padding:10px;border-bottom:1px solid #444">最高</th><th style="padding:10px;border-bottom:1px solid #444">详情</th></tr></thead><tbody>';
+    rows.forEach(function(r){h+='<tr style="background:'+(r.avg>=80?'#1a3a1a':r.avg>=70?'#3a3a1a':'#3a1a1a')+'"><td>'+r.name+'</td><td style="text-align:center">'+r.count+'</td><td style="text-align:center;font-weight:700;font-size:16px;color:#4fc3f7">'+r.avg+'</td><td style="text-align:center">'+r.max+'</td><td style="text-align:center"><button class="admin-btn btn-blue" onclick="showDetail(\''+r.name+'\')">查看</button></td></tr>';});
+    h+='</tbody></table>';document.getElementById('adminTable').innerHTML=h;
+  }).catch(function(){document.getElementById('adminTable').innerHTML='<div style="color:#e53935;padding:20px;text-align:center">加载失败，刷新页面重试</div>';});
+}
+
+function showDetail(name){fetch('./data.json').then(function(r){return r.json();}).then(function(data){var recs=data.filter(function(r){return r.teacher===name;});var h='<div style="max-height:400px;overflow-y:auto">';recs.forEach(function(r){h+='<div style="padding:10px;margin:6px 0;background:#333;border-radius:6px"><div style="font-size:13px;color:#aaa">'+r.time+' | 年级:'+(r.gl||'-')+' | 干部:'+(r.ld||'-')+' | 党员:'+(r.dy||'-')+'</div><div style="font-size:18px;font-weight:700;color:#4fc3f7">'+r.total+'分</div><div style="font-size:12px;color:#888;margin-top:4px">各项:'+r.scores.join(',')+'</div>'+(r.sub?'<div style="font-size:13px;color:#ccc;margin-top:6px">💬 '+r.sub+'</div>':'')+'</div>';});h+='</div><button class="admin-btn btn-dark" onclick="loadAdmin()" style="margin-top:10px">返回</button>';document.getElementById('adminTable').innerHTML=h;});}
+
+function exportCSV(){fetch('./data.json').then(function(r){return r.json();}).then(function(data){if(!data.length){alert('无数据');return;}var csv='班主任,年级,学生干部,党员,总分,意见建议,时间\n';data.forEach(function(r){csv+=r.teacher+','+(r.gl||'')+','+(r.ld||'')+','+(r.dy||'')+','+r.total+',"'+(r.sub||'').replace(/"/g,'""')+'","'+(r.time||'')+'"\n';});var a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv'}));a.download='班主任评分数据.csv';a.click();});}
+
+function clearData(){if(!confirm('确定清空所有数据？'))return;fetch('https://api.github.com/repos/'+REPO+'/contents/data.json',{headers:{'Authorization':'token '+TOKEN}}).then(function(r){return r.json();}).then(function(info){return fetch('https://api.github.com/repos/'+REPO+'/contents/data.json',{method:'PUT',headers:{'Authorization':'token '+TOKEN,'Content-Type':'application/json'},body:JSON.stringify({message:'Clear',content:btoa('[]'),sha:info.sha})});}).then(function(){document.getElementById('recordCount').textContent='共 0 条';document.getElementById('adminTable').innerHTML='<div style="color:#888;padding:20px;text-align:center">已清空</div>';});}
+
+function resetAll(){ratings.fill(null);document.querySelectorAll('input[type=radio]').forEach(function(r){r.checked=false;});document.getElementById('resultBox').classList.remove('show');document.getElementById('teacherName').value='';document.getElementById('subjective').value='';document.getElementById('grade').value='';document.getElementById('isLeader').value='';document.getElementById('isParty').value='';document.getElementById('nameError').style.display='none';window.scrollTo({top:0,behavior:'smooth'});}
+</script>
+</body>
+</html>
